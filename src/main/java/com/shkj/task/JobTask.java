@@ -83,8 +83,8 @@ public class JobTask implements SchedulingConfigurer {
                     List<Holiday> listHoliday = holidayService.queryByMonth(sf2.format(new Date()));
                     // 获取最全的工作日集合
                     for(Holiday holiday: listHoliday){
-                        if(holiday.getType() == "0") {
-                            if(dates.indexOf(holiday.getDay()) > 0) { //如果类型是“假日”，且工作日集合中存在，则从集合中移除
+                        if(holiday.getType().contentEquals("0")) {
+                            if(dates.indexOf(holiday.getDay()) >= 0) { //如果类型是“假日”，且工作日集合中存在，则从集合中移除
                                 dates.remove(dates.indexOf(holiday.getDay()));
                             }
                         } else {
@@ -172,7 +172,7 @@ public class JobTask implements SchedulingConfigurer {
                         
                         // 合并消息内容
                         noticeMsg = noticeMsg + nosendMsg + noDaySendMsg + businessMsg + holidayMsg
-                                + "经营团队、管理部门总经理室成员每工作日应在招呼群中报送日志，公司部次日将会对未报送及未及时报送日志的负责人进行通报，如有疑问请在招呼群众告知 陈博（一事通 297807），谢谢您的配合";
+                                + "经营团队、管理部门总经理室成员每工作日应在招呼群中报送日志，公司部次日将会对未报送及未及时报送日志的负责人进行通报，如有疑问请在招呼群中告知 陈博（一事通 297807），谢谢您的配合";
                         logger.info("【通报内容】：" + noticeMsg);
                         
                         String apiUrl = sysParamService.getValueBykey("apiUrl");
@@ -181,7 +181,7 @@ public class JobTask implements SchedulingConfigurer {
                         Map<String, Object> requestParam = new HashMap<>();
                         requestParam.put("msgCode", sysParamService.getValueBykey("msgCode")); // 招呼机器人code，需要提供
                         requestParam.put("msgContent", noticeMsg); //招呼内容
-                        requestParam.put("groupID", sysParamService.getValueBykey("groupId")); // 群聊ID，需要提供 （正式环境需要从报送日志表中获取）
+                        requestParam.put("groupId", sysParamService.getValueBykey("groupId")); // 群聊ID，需要提供 （正式环境需要从报送日志表中获取）
                         logger.info("【发送通报内容】：" + requestParam.toString());
                         HttpEntity<Map<String, Object>> request = new HttpEntity<Map<String, Object>>(requestParam, headers);
 
